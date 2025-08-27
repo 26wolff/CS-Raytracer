@@ -1,16 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace Render
 {
     // A face (triangle, quad, etc.)
-    class Scene
+    public class Scene
     {
         List<Vec3> VerticiesList = new List<Vec3>();
         List<Face> FaceList = new List<Face>();
 
+        public Scene()
+        {
+            // load all obj files
+            LoadOBJ("Untitled.obj");
+        }
 
+        public void LoadOBJ(string name)
+        {
+
+            string fullPath = Path.Combine("./objects", name);
+            foreach (var line in File.ReadLines(fullPath))
+            {
+                if (line.StartsWith("v "))
+                {
+                    Console.WriteLine("Vertex: " + line);
+                }
+                else if (line.StartsWith("f "))
+                {
+                    Console.WriteLine("Face: " + line);
+                }
+            }
+        }
 
 
     }
@@ -22,7 +44,7 @@ namespace Render
 
         public Face(Vec3 p, Vec3 Normal, Material mat)
         {
-            v_Index = new List<int> { (int) p.x, (int) p.y, (int) p.z };
+            v_Index = new List<int> { (int)p.x, (int)p.y, (int)p.z };
             normal = Normal;
             material = mat;
         }

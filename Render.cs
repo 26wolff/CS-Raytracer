@@ -19,7 +19,7 @@ namespace Render
 
             Camera camera = new Camera(CamPos, CamAngle, CamFov);
 
-
+            Scene scene = new Scene();
 
             for (int y = 0; y < height; y++)
             {
