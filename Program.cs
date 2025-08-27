@@ -23,7 +23,7 @@ namespace Render
             Render.RenderScene(width, height, bitmapId);
 
             float CON_RenderTotalTime = (float) sw.Elapsed.TotalSeconds - CON_RenderStart;
-
+            
             Console.WriteLine($"Render Ended at : {sw.Elapsed.TotalSeconds:F5} seconds");
             Console.WriteLine($"Render Took : {CON_RenderTotalTime} seconds");
             // Step 2: Load the bitmap

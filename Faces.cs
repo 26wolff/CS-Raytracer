@@ -9,6 +9,7 @@ namespace Render
     public class Scene
     {
         List<Vec3> VerticiesList = new List<Vec3>();
+        List<Material> MaterialList = new List<Material>();
         List<Face> FaceList = new List<Face>();
 
         public Scene()
@@ -50,9 +51,9 @@ namespace Render
     {
         public List<int> v_Index { get; private set; }
         public Vec3 normal { get; private set; }
-        public Material material { get; private set; }
+        public int material { get; private set; }
 
-        public Face(Vec3 p, Vec3 Normal, Material mat)
+        public Face(Vec3 p, Vec3 Normal, int mat)
         {
             v_Index = new List<int> { (int)p.x, (int)p.y, (int)p.z };
             normal = Normal;
