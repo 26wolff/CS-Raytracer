@@ -14,12 +14,10 @@ namespace Render
         public Scene()
         {
             // load all obj files
-            LoadOBJ("Untitled.obj");
+            Load_Multiple_From_TXT("ToRender.txt");
         }
-
-        public void LoadOBJ(string name)
+        public void Load_OBJ(string name)
         {
-
             string fullPath = Path.Combine("./objects", name);
             foreach (var line in File.ReadLines(fullPath))
             {
@@ -31,6 +29,18 @@ namespace Render
                 {
                     Console.WriteLine("Face: " + line);
                 }
+            }
+        }
+
+        public void Load_Multiple_From_TXT(string name)
+        {
+            if (Path.GetExtension(name).ToLower() != ".txt") return;
+
+            string fullPath = Path.Combine("./objects", name);
+            foreach (var line in File.ReadLines(fullPath))
+            {
+                if (Path.GetExtension(line).ToLower() != ".obj" || line.StartsWith("#")) continue;
+                Load_OBJ(line);
             }
         }
 
