@@ -1,0 +1,15 @@
+C:\Users\tyler\CODE\RasteriserC#\bin\Debug\net9.0\CODE.exe
+C:\Users\tyler\CODE\RasteriserC#\bin\Debug\net9.0\CODE.deps.json
+C:\Users\tyler\CODE\RasteriserC#\bin\Debug\net9.0\CODE.runtimeconfig.json
+C:\Users\tyler\CODE\RasteriserC#\bin\Debug\net9.0\CODE.dll
+C:\Users\tyler\CODE\RasteriserC#\bin\Debug\net9.0\CODE.pdb
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.AssemblyInfoInputs.cache
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.AssemblyInfo.cs
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.csproj.CoreCompileInputs.cache
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.dll
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\refint\CODE.dll
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.pdb
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.genruntimeconfig.cache
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\ref\CODE.dll
+C:\Users\tyler\CODE\RasteriserC#\obj\Debug\net9.0\CODE.csproj.AssemblyReference.cache
