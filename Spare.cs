@@ -66,6 +66,23 @@ namespace Render
         }
     }
 
+    public struct intVec3
+    {
+        public int x;
+        public int y;
+        public int z;
+
+        public intVec3(int X, int Y, int Z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+        public override string ToString()
+        {
+            return $"({x}, {y}, {z})";
+        }
+    }
     public struct Vec3
     {
         public float x;
@@ -118,7 +135,57 @@ namespace Render
         {
             return $"({x}, {y}, {z})";
         }
+        public override bool Equals(object obj)
+        {
+            if (obj is Vec3 other)
+            {
+                return x == other.x && y == other.y && z == other.z;
+            }
+            return false;
+        }
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(x, y, z);
+        }
     };
+    public struct Count3
+    {
+        public int p1;
+        public int p2;
+        public int p3;
+
+        public Count3(int p1, int p2, int p3)
+        {
+            this.p1 = p1;
+            this.p2 = p2;
+            this.p3 = p3;
+        }
+
+        // Optional: indexer for convenience
+        public int this[int index]
+        {
+            get
+            {
+                return index switch
+                {
+                    0 => p1,
+                    1 => p2,
+                    2 => p3,
+                    _ => throw new IndexOutOfRangeException("Count3 only has indices 0,1,2")
+                };
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0: p1 = value; break;
+                    case 1: p2 = value; break;
+                    case 2: p3 = value; break;
+                    default: throw new IndexOutOfRangeException("Count3 only has indices 0,1,2");
+                }
+            }
+        }
+    }
     public class ColorRGB
     {
         public float R { get; private set; }
