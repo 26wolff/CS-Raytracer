@@ -5,21 +5,22 @@ namespace Render
 {
     public static class Render
     {
-        public static void RenderScene(int width, int height, string id)
+        public static void RenderScene(Scene scene, int width, int height, string id)
         {
+            Debug.LogNow("Render Started: ", "s");
+            Debug.HoldNow("RenderStart");
+
             Bitmap bmp = new Bitmap(width, height);
-            
+
             Vec3 CamPos = new Vec3(0, 0, -3);
             Vec3 CamAngle = new Vec3(0, 0, 0);
             Vec2 CamFov = new Vec2((float)Math.PI / 2f, (float)Math.PI / 2f / ((float)width / (float)height));
 
-            Console.WriteLine(
-                $"Camera FOV -> X (horizontal): {CamFov.x:F3} rad, Y (vertical): {CamFov.y:F3} rad"
-            );
+            // Console.WriteLine(
+            //     $"Camera FOV -> X (horizontal): {CamFov.x:F3} rad, Y (vertical): {CamFov.y:F3} rad"
+            // );
 
             Camera camera = new Camera(CamPos, CamAngle, CamFov);
-
-            Scene scene = new Scene();
 
             for (int y = 0; y < height; y++)
             {
@@ -34,12 +35,16 @@ namespace Render
 
             // Save using BitmapIO
             BitmapIO.SaveBitmap(id, bmp);
+
+            Debug.LogNow("Render Ended at: ", "s");
+            Debug.HoldNow("RenderEnd");
+            Debug.LogDiff("RenderEnd","RenderStart","Render Took: ","s");
         }
         public static Vec3 RenderPixel(Ray ray)
         {
 
-                return new Vec3(255, 255, 255); // white for miss
-            
+            return new Vec3(255, 255, 255); // white for miss
+
         }
 
     }

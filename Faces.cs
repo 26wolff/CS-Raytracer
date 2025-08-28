@@ -17,13 +17,20 @@ namespace Render
 
         public Scene()
         {
+            Debug.LogNow("Scene Started: ", "s");
+            Debug.HoldNow("SceneStart");
             // load all obj files
             Load_Multiple_From_TXT("ToRender.txt");
 
-            foreach (Face face in FaceList)
-            {
-                LogFace(face,1);
-            }
+            // foreach (Face face in FaceList)
+            // {
+            //     LogFace(face, 1);
+            // }
+            Debug.LogNow("Scene Ended at: ", "s");
+            Debug.HoldNow("SceneEnd");
+            Debug.LogDiff("SceneEnd","SceneStart","Scene Took: ","s");
+            
+            
         }
         public void Load_OBJ(string name)
         {
@@ -76,8 +83,6 @@ namespace Render
                     //Loops 1 face line to create multiple if 4p = 3p,3p
                     for (int i = 1; i < formated.Count - 1; i++)
                     {
-                        Console.WriteLine($"{i},{i + 1},{0}");
-
                         // TODO : fix this to make it counter clockwise / clockwise instead of cl - ccl - ccl ...
 
                         // Holds the index of the face for global

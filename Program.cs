@@ -6,28 +6,26 @@ using System.Diagnostics;
 
 namespace Render
 {
+    
     class Program
     {
         static void Main()
         {
-            Stopwatch sw = Stopwatch.StartNew();
+            Debug.LogNow("Main Start at: ", "s");
+            Debug.HoldNow("MainStart");
 
             int width = 320;
             int height = 180;
             int scale = 3;
             string bitmapId = "gradient";
 
-            float CON_RenderStart = (float) sw.Elapsed.TotalSeconds;
-            Console.WriteLine($"Render Started at : {CON_RenderStart} seconds");
             // Step 1: Create and save the bitmap
-            Render.RenderScene(width, height, bitmapId);
 
-            return;
+            Scene scene = new Scene();
 
-            float CON_RenderTotalTime = (float) sw.Elapsed.TotalSeconds - CON_RenderStart;
+            Render.RenderScene(scene, width, height, bitmapId);
 
-            Console.WriteLine($"Render Ended at : {sw.Elapsed.TotalSeconds:F5} seconds");
-            Console.WriteLine($"Render Took : {CON_RenderTotalTime} seconds");
+
             // Step 2: Load the bitmap
             Bitmap loadedImage = BitmapIO.LoadBitmap(bitmapId);
 
@@ -46,8 +44,11 @@ namespace Render
 
                 e.Graphics.DrawImage(loadedImage, 0, 0, width * scale, height * scale);
             };
-            Console.WriteLine($"Drawing Ended at : {sw.Elapsed.TotalSeconds:F5} seconds");
+
             Application.Run(form);
+            Debug.LogNow("Main Ended at: ", "s");
+            Debug.HoldNow("MainEnd");
+            Debug.LogDiff("MainEnd","MainStart","Main Took: ","s");
         }
     }
 }
