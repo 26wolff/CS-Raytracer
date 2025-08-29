@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Render
 {
-    
+
     class Program
     {
         static void Main()
@@ -23,13 +23,15 @@ namespace Render
 
             Scene scene = new Scene();
 
-            Vec3 CamPos = new Vec3(0, 0, -10);
-            Vec3 CamAngle = new Vec3(0, 0, 0); // yaw, pitch, roll
+            Vec3 CamPos = new Vec3(0, 0, -3);
+            Vec3 CamAngle = new Vec3(0, 0, 0); // pitch, yaw (45 deg), roll
             Vec2 CamFov = new Vec2((float)Math.PI / 2f, (float)Math.PI / 2f / ((float)width / (float)height));
 
             Camera camera = new Camera(CamPos, CamAngle, CamFov);
 
-            Render.RenderScene(scene, camera, width, height, bitmapId);
+            Spare.DeleteAllFilesInFolder("output");
+
+            Render.RenderScene(scene, camera, width, height, $"{bitmapId}");
 
 
             // Step 2: Load the bitmap
@@ -54,7 +56,7 @@ namespace Render
             Application.Run(form);
             Debug.LogNow("Main Ended at: ", "s");
             Debug.HoldNow("MainEnd");
-            Debug.LogDiff("MainEnd","MainStart","Main Took: ","s");
+            Debug.LogDiff("MainEnd", "MainStart", "Main Took: ", "s");
         }
     }
 }

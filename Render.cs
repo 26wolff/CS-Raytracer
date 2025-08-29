@@ -17,8 +17,8 @@ namespace Render
 
             // Prepare camera vectors for GPU
             Vec3 forward = GetForwardFromRotation(camera.Rotation);
-            Vec3 right = new Vec3((float)Math.Sin(camera.Rotation.y - Math.PI / 2), 0, (float)Math.Cos(camera.Rotation.y - Math.PI / 2));
-            Vec3 up = new Vec3(0, 1, 0); // simple up
+            Vec3 right = GetRightFromRotation(camera.Rotation);
+            Vec3 up = GetUpFromRotation(camera.Rotation); // simple up
 
             float3 camPos3 = new float3(camera.Position.x, camera.Position.y, camera.Position.z);
             float3 camForward3 = new float3(forward.x, forward.y, forward.z);
@@ -78,12 +78,28 @@ namespace Render
             float cosYaw = (float)Math.Cos(rotation.y);
             float sinYaw = (float)Math.Sin(rotation.y);
 
+            // Forward vector
             Vec3 forward = new Vec3(
                 cosPitch * sinYaw,
                 sinPitch,
                 cosPitch * cosYaw
             );
             return Normalize(forward);
+        }
+
+        private static Vec3 GetRightFromRotation(Vec3 rotation)
+        {
+            // rotation.y = yaw
+            float cosYaw = (float)Math.Cos(rotation.y);
+            float sinYaw = (float)Math.Sin(rotation.y);
+            // Right vector is perpendicular to forward and up
+            return new Vec3(cosYaw, 0, -sinYaw);
+        }
+
+        private static Vec3 GetUpFromRotation(Vec3 rotation)
+        {
+            // Up is always (0,1,0) in world space for a simple camera
+            return new Vec3(0, 1, 0);
         }
 
         private static Vec3 Normalize(Vec3 v)

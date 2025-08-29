@@ -1,6 +1,10 @@
 using System;
+using System.IO;
+
 namespace Render
 {
+
+
 
     public static class Spare
     {
@@ -19,13 +23,23 @@ namespace Render
                 $"Rotation -> Yaw: {ray.Rotation.y:F3}, Pitch: {ray.Rotation.x:F3}, Roll: {ray.Rotation.z:F3}"
             );
         }
+        public static void DeleteAllFilesInFolder(string folderPath)
+        {
+            if (Directory.Exists(folderPath))
+            {
+                foreach (var file in Directory.GetFiles(folderPath))
+                {
+                    File.Delete(file);
+                }
+            }
+        }
     }
     public class Ray
     {
         public Vec3 Position { get; set; } = new();
         public Vec3 Rotation { get; set; } = new(); // yaw, pitch, roll
     }
-    
+
 
     public struct Vec2
     {
