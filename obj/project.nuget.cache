@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "vB9RerELtGo=",
+  "dgSpecHash": "vg2jaCIaV4o=",
   "success": true,
   "projectFilePath": "c:\\Users\\tyler\\CODE\\C#Raytracer\\CODE.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\tyler\\.nuget\\packages\\computesharp\\2.1.0\\computesharp.2.1.0.nupkg.sha512",
+    "C:\\Users\\tyler\\.nuget\\packages\\computesharp.core\\2.1.0\\computesharp.core.2.1.0.nupkg.sha512",
+    "C:\\Users\\tyler\\.nuget\\packages\\terrafx.interop.windows\\10.0.22621.2\\terrafx.interop.windows.10.0.22621.2.nupkg.sha512",
+    "C:\\Users\\tyler\\.nuget\\packages\\microsoft.windows.sdk.net.ref\\10.0.19041.57\\microsoft.windows.sdk.net.ref.10.0.19041.57.nupkg.sha512"
+  ],
   "logs": []
 }

@@ -14,16 +14,22 @@ namespace Render
             Debug.LogNow("Main Start at: ", "s");
             Debug.HoldNow("MainStart");
 
-            int width = 320;
-            int height = 180;
-            int scale = 3;
+            int width = 1280;
+            int height = 720;
+            int scale = 1;
             string bitmapId = "gradient";
 
             // Step 1: Create and save the bitmap
 
             Scene scene = new Scene();
 
-            Render.RenderScene(scene, width, height, bitmapId);
+            Vec3 CamPos = new Vec3(0, 0, -10);
+            Vec3 CamAngle = new Vec3(0, 0, 0); // yaw, pitch, roll
+            Vec2 CamFov = new Vec2((float)Math.PI / 2f, (float)Math.PI / 2f / ((float)width / (float)height));
+
+            Camera camera = new Camera(CamPos, CamAngle, CamFov);
+
+            Render.RenderScene(scene, camera, width, height, bitmapId);
 
 
             // Step 2: Load the bitmap

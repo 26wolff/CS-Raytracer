@@ -25,6 +25,8 @@ namespace Render
         public Vec3 Position { get; set; } = new();
         public Vec3 Rotation { get; set; } = new(); // yaw, pitch, roll
     }
+    
+
     public struct Vec2
     {
         public float x;

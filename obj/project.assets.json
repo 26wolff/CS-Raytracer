@@ -1,11 +1,117 @@
 {
   "version": 3,
   "targets": {
-    "net9.0-windows7.0": {}
+    "net9.0-windows10.0.19041": {
+      "ComputeSharp/2.1.0": {
+        "type": "package",
+        "dependencies": {
+          "ComputeSharp.Core": "2.1.0",
+          "TerraFX.Interop.Windows": "10.0.22621.2"
+        },
+        "compile": {
+          "lib/net6.0/ComputeSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ComputeSharp.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/ComputeSharp.targets": {}
+        }
+      },
+      "ComputeSharp.Core/2.1.0": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/ComputeSharp.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/ComputeSharp.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/ComputeSharp.Core.targets": {}
+        }
+      },
+      "TerraFX.Interop.Windows/10.0.22621.2": {
+        "type": "package",
+        "compile": {
+          "lib/net7.0/TerraFX.Interop.Windows.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net7.0/TerraFX.Interop.Windows.dll": {
+            "related": ".xml"
+          }
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "ComputeSharp/2.1.0": {
+      "sha512": "AMHO8BColwjC9B+OnjzbfP2SOtNrZ9to6kjg2HXYWsrkrnbLBxu5Psvvgck99VRiO69WzrnqWtnbLQOnORm8Bw==",
+      "type": "package",
+      "path": "computesharp/2.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "analyzers/dotnet/cs/ComputeSharp.SourceGenerators.dll",
+        "build/ComputeSharp.targets",
+        "buildTransitive/ComputeSharp.targets",
+        "computesharp.2.1.0.nupkg.sha512",
+        "computesharp.nuspec",
+        "icon.png",
+        "lib/net6.0/ComputeSharp.dll",
+        "lib/net6.0/ComputeSharp.xml",
+        "lib/netstandard2.0/ComputeSharp.dll",
+        "lib/netstandard2.0/ComputeSharp.xml"
+      ]
+    },
+    "ComputeSharp.Core/2.1.0": {
+      "sha512": "z4fMtHvmIzZvCfHF9r7jJWcTHhg5N2Ry9MeaERSMJNs5mifRmEvwapkpS02vokgelnE/w1iWGVwJQfV7WmPW0w==",
+      "type": "package",
+      "path": "computesharp.core/2.1.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "analyzers/dotnet/cs/ComputeSharp.Core.SourceGenerators.dll",
+        "build/ComputeSharp.Core.targets",
+        "buildTransitive/ComputeSharp.Core.targets",
+        "computesharp.core.2.1.0.nupkg.sha512",
+        "computesharp.core.nuspec",
+        "icon.png",
+        "lib/net6.0/ComputeSharp.Core.dll",
+        "lib/net6.0/ComputeSharp.Core.xml",
+        "lib/netstandard2.0/ComputeSharp.Core.dll",
+        "lib/netstandard2.0/ComputeSharp.Core.xml"
+      ]
+    },
+    "TerraFX.Interop.Windows/10.0.22621.2": {
+      "sha512": "lORoYCoURS33Vi7PDvubRugLF2+l5v3rX2oVEqNhpBLjs3aZpqapRvTHPKVwsC+dGrsGuqJ/3yXuxVUb0vl3vg==",
+      "type": "package",
+      "path": "terrafx.interop.windows/10.0.22621.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net6.0/TerraFX.Interop.Windows.dll",
+        "lib/net6.0/TerraFX.Interop.Windows.xml",
+        "lib/net7.0/TerraFX.Interop.Windows.dll",
+        "lib/net7.0/TerraFX.Interop.Windows.xml",
+        "terrafx.interop.windows.10.0.22621.2.nupkg.sha512",
+        "terrafx.interop.windows.nuspec"
+      ]
+    }
+  },
   "projectFileDependencyGroups": {
-    "net9.0-windows7.0": []
+    "net9.0-windows10.0.19041": [
+      "ComputeSharp >= 2.1.0"
+    ]
   },
   "packageFolders": {
     "C:\\Users\\tyler\\.nuget\\packages\\": {}
@@ -23,14 +129,14 @@
         "C:\\Users\\tyler\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
-        "net9.0-windows"
+        "net9.0-windows10.0.19041.0"
       ],
       "sources": {
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net9.0-windows7.0": {
-          "targetAlias": "net9.0-windows",
+        "net9.0-windows10.0.19041": {
+          "targetAlias": "net9.0-windows10.0.19041.0",
           "projectReferences": {}
         }
       },
@@ -47,8 +153,14 @@
       "SdkAnalysisLevel": "9.0.300"
     },
     "frameworks": {
-      "net9.0-windows7.0": {
-        "targetAlias": "net9.0-windows",
+      "net9.0-windows10.0.19041": {
+        "targetAlias": "net9.0-windows10.0.19041.0",
+        "dependencies": {
+          "ComputeSharp": {
+            "target": "Package",
+            "version": "[2.1.0, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -60,8 +172,17 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.Windows.SDK.NET.Ref",
+            "version": "[10.0.19041.57, 10.0.19041.57]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          },
+          "Microsoft.Windows.SDK.NET.Ref.Windows": {
             "privateAssets": "all"
           },
           "Microsoft.WindowsDesktop.App.WindowsForms": {

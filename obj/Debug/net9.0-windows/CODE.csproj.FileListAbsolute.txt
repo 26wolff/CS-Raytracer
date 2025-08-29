@@ -27,3 +27,4 @@ c:\Users\tyler\CODE\C#Raytracer\obj\Debug\net9.0-windows\CODE.pdb
 c:\Users\tyler\CODE\C#Raytracer\obj\Debug\net9.0-windows\CODE.genruntimeconfig.cache
 c:\Users\tyler\CODE\C#Raytracer\obj\Debug\net9.0-windows\ref\CODE.dll
 c:\Users\tyler\CODE\C#Raytracer\obj\Debug\net9.0-windows\CODE.sourcelink.json
+c:\Users\tyler\CODE\C#Raytracer\obj\Debug\net9.0-windows\CODE.csproj.AssemblyReference.cache

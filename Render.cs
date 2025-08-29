@@ -1,51 +1,97 @@
 using System;
 using System.Drawing;
+using Render.GpuShaders;
+using ComputeSharp;
 
 namespace Render
 {
     public static class Render
     {
-        public static void RenderScene(Scene scene, int width, int height, string id)
+        public static void RenderScene(Scene scene, Camera camera, int width, int height, string id)
         {
             Debug.LogNow("Render Started: ", "s");
             Debug.HoldNow("RenderStart");
 
             Bitmap bmp = new Bitmap(width, height);
 
-            Vec3 CamPos = new Vec3(0, 0, -3);
-            Vec3 CamAngle = new Vec3(0, 0, 0);
-            Vec2 CamFov = new Vec2((float)Math.PI / 2f, (float)Math.PI / 2f / ((float)width / (float)height));
 
-            // Console.WriteLine(
-            //     $"Camera FOV -> X (horizontal): {CamFov.x:F3} rad, Y (vertical): {CamFov.y:F3} rad"
-            // );
+            // Prepare camera vectors for GPU
+            Vec3 forward = GetForwardFromRotation(camera.Rotation);
+            Vec3 right = new Vec3((float)Math.Sin(camera.Rotation.y - Math.PI / 2), 0, (float)Math.Cos(camera.Rotation.y - Math.PI / 2));
+            Vec3 up = new Vec3(0, 1, 0); // simple up
 
-            Camera camera = new Camera(CamPos, CamAngle, CamFov);
+            float3 camPos3 = new float3(camera.Position.x, camera.Position.y, camera.Position.z);
+            float3 camForward3 = new float3(forward.x, forward.y, forward.z);
+            float3 camRight3 = new float3(right.x, right.y, right.z);
+            float3 camUp3 = new float3(up.x, up.y, up.z);
 
-            for (int y = 0; y < height; y++)
+            int pixelCount = width * height;
+            var device = GraphicsDevice.GetDefault();
+            using ReadOnlyBuffer<GpuFace> facesBuffer = device.AllocateReadOnlyBuffer(scene.GpuFaces.ToArray());
+            using ReadWriteBuffer<float3> outputBuffer = device.AllocateReadWriteBuffer<float3>(pixelCount);
+
+            int maxBounces = 2; // can be parameterized
+
+            // Run kernel for all pixels in parallel
+            device.For(pixelCount, new RaytraceKernel(
+                facesBuffer,
+                width,
+                height,
+                camPos3,
+                camForward3,
+                camRight3,
+                camUp3,
+                camera.Fov.x,
+                camera.Fov.y,
+                maxBounces,
+                outputBuffer
+            ));
+
+            // Copy results from GPU to CPU
+            var results = outputBuffer.ToArray();
+            for (int i = 0; i < pixelCount; i++)
             {
-                for (int x = 0; x < width; x++)
-                {
-                    Ray ray = camera.GetRay((float)x / width, (float)y / height);
-
-                    Vec3 PixelColor = RenderPixel(ray);
-                    bmp.SetPixel(x, y, Color.FromArgb((int)PixelColor.x, (int)PixelColor.y, (int)PixelColor.z));
-                }
+                int x = i % width;
+                int y = i / width;
+                var result = results[i];
+                bmp.SetPixel(x, y, Color.FromArgb(
+                    (int)Math.Clamp(result.X * 255f, 0, 255),
+                    (int)Math.Clamp(result.Y * 255f, 0, 255),
+                    (int)Math.Clamp(result.Z * 255f, 0, 255)
+                ));
             }
 
-            // Save using BitmapIO
             BitmapIO.SaveBitmap(id, bmp);
 
             Debug.LogNow("Render Ended at: ", "s");
             Debug.HoldNow("RenderEnd");
-            Debug.LogDiff("RenderEnd","RenderStart","Render Took: ","s");
+            Debug.LogDiff("RenderEnd", "RenderStart", "Render Took: ", "s");
         }
-        public static Vec3 RenderPixel(Ray ray)
+
+       
+
+        private static Vec3 GetForwardFromRotation(Vec3 rotation)
         {
+            // rotation.x = pitch, rotation.y = yaw, rotation.z = roll
+            float cosPitch = (float)Math.Cos(rotation.x);
+            float sinPitch = (float)Math.Sin(rotation.x);
+            float cosYaw = (float)Math.Cos(rotation.y);
+            float sinYaw = (float)Math.Sin(rotation.y);
 
-            return new Vec3(255, 255, 255); // white for miss
-
+            Vec3 forward = new Vec3(
+                cosPitch * sinYaw,
+                sinPitch,
+                cosPitch * cosYaw
+            );
+            return Normalize(forward);
         }
 
+        private static Vec3 Normalize(Vec3 v)
+        {
+            float mag = (float)Math.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            if (mag > 1e-6f)
+                return new Vec3(v.x / mag, v.y / mag, v.z / mag);
+            return new Vec3(0, 0, 0);
+        }
+        }
     }
-}
