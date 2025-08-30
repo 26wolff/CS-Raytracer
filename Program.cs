@@ -23,7 +23,7 @@ namespace Render
 
             Scene scene = new Scene();
 
-            Vec3 CamPos = new Vec3(0, 0, -3);
+            Vec3 CamPos = new Vec3(0, 0, -6);
             Vec3 CamAngle = new Vec3(0, 0, 0); // pitch, yaw (45 deg), roll
             Vec2 CamFov = new Vec2((float)Math.PI / 2f, (float)Math.PI / 2f / ((float)width / (float)height));
 

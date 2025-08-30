@@ -7,6 +7,7 @@ namespace Render.GpuShaders
     public readonly partial struct RaytraceKernel : IComputeShader
     {
         public readonly ReadOnlyBuffer<GpuFace> Faces;
+        public readonly ReadOnlyBuffer<Material> Materials;
         public readonly int Width;
         public readonly int Height;
         public readonly float3 CameraPos;
@@ -17,9 +18,12 @@ namespace Render.GpuShaders
         public readonly float FovY;
         public readonly int MaxBounces;
         public readonly ReadWriteBuffer<float3> Output;
+        // Stores hit info for each bounce
+        public readonly ReadWriteBuffer<RayHit> Hits;
 
         public RaytraceKernel(
             ReadOnlyBuffer<GpuFace> faces,
+            ReadOnlyBuffer<Material> materials,
             int width,
             int height,
             float3 cameraPos,
@@ -29,9 +33,11 @@ namespace Render.GpuShaders
             float fovX,
             float fovY,
             int maxBounces,
-            ReadWriteBuffer<float3> output)
+            ReadWriteBuffer<float3> output,
+            ReadWriteBuffer<RayHit> hits)
         {
             Faces = faces;
+            Materials = materials;
             Width = width;
             Height = height;
             CameraPos = cameraPos;
@@ -42,6 +48,7 @@ namespace Render.GpuShaders
             FovY = fovY;
             MaxBounces = maxBounces;
             Output = output;
+            Hits = hits;
         }
 
         public void Execute()
@@ -57,8 +64,19 @@ namespace Render.GpuShaders
             float3 rayDir = GetRayDirection(u, v);
             float3 rayOrigin = CameraPos;
 
-            float3 color = TraceRay(rayOrigin, rayDir, MaxBounces);
+
+            int hitIndex = TraceRay(rayOrigin, rayDir, MaxBounces);
+            float3 color = ComputeColor(hitIndex, MaxBounces);
             Output[pixelIndex] = color;
+        }
+
+        private float3 ComputeColor(int hitIndex, int MaxBounces)
+        {
+            if (hitIndex == 0) return new float3(0f, 0f, 0f);
+
+            ColorRGB hue = Materials[Hits[hitIndex].Face.Material].BaseColor;
+
+            return ColorRGBToFloat3(hue);
         }
 
         private float3 GetRayDirection(float u, float v)
@@ -68,13 +86,17 @@ namespace Render.GpuShaders
                 + CameraUp * ((v - 0.5f) * FovY);
             return Hlsl.Normalize(dir);
         }
-
-        private float3 TraceRay(float3 origin, float3 direction, int bounces)
+        public static float3 ColorRGBToFloat3(ColorRGB color)
+        {
+            return new float3(color.R, color.G, color.B);
+        }
+        private int TraceRay(float3 origin, float3 direction, int bounces)
         {
             float3 hitColor = new float3(0f, 0f, 0f);
             float3 sunNormal = new float3(0f, -1f, 0f);
             float3 currOrigin = origin;
             float3 currDir = direction;
+            int hitIndex = 0;
             for (int bounce = 0; bounce <= bounces; bounce++)
             {
                 float closestT = float.MaxValue;
@@ -94,33 +116,39 @@ namespace Render.GpuShaders
                 if (hitFace != -1)
                 {
                     GpuFace face = Faces[hitFace];
+                    float3 hitPoint = currOrigin + currDir * closestT;
+                    // Store hit info for this pixel only
 
-                    float hue = NormalDifference(face.Normal, sunNormal); //* 0.9f + 0.1f;
+                    Hits[hitIndex].Face = face;
+                    Hits[hitIndex].HitPoint = hitPoint;
+                    hitIndex++;
 
-                    //hitColor = face.Color;
 
-                    hitColor = new float3(hue, hue, hue);
-                    if (bounce < bounces && face.Material > 0)
-                    {
-                        float3 hitPoint = currOrigin + currDir * closestT;
-                        float3 reflectDir = Hlsl.Reflect(currDir, face.Normal);
-                        currOrigin = hitPoint + reflectDir * 1e-4f;
-                        currDir = reflectDir;
-                        continue;
-                    }
+                    float3 reflectDir = Hlsl.Reflect(currDir, face.Normal);
+                    currOrigin = hitPoint + reflectDir * 1e-4f;
+                    currDir = reflectDir;
+
                 }
                 else
                 {
-                    float hue = NormalDifference(currDir, sunNormal); //* 0.9f + 0.1f;
-
-                    //hitColor = face.Color;
-
-                    hitColor = new float3(.7f, .5f, 1f-hue);
+                    break;
                 }
-                break;
             }
-            return hitColor;
+            return hitIndex;
         }
+        // Struct to hold hit info for each bounce
+        public struct RayHit
+        {
+            public GpuFace Face;
+            public float3 HitPoint;
+
+            public RayHit(GpuFace face, float3 hitPoint)
+            {
+                Face = face;
+                HitPoint = hitPoint;
+            }
+        }
+
 
         public static float NormalDifference(Vector3 n1, Vector3 n2)
         {

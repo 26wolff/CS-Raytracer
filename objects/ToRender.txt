@@ -1,1 +1,2 @@
-Untitled.obj
+Object.obj
+Light.obj

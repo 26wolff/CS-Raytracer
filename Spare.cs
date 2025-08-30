@@ -202,46 +202,41 @@ namespace Render
             }
         }
     }
-    public class ColorRGB
+    public struct ColorRGB
     {
-        public float R { get; private set; }
-        public float G { get; private set; }
-        public float B { get; private set; }
+        public float R;
+        public float G;
+        public float B;
 
         public ColorRGB(float r, float g, float b)
         {
-            R = Clamp(r);
-            G = Clamp(g);
-            B = Clamp(b);
+            R = r;
+            G = g;
+            B = b;
         }
 
-        private float Clamp(float value) => Math.Max(0.0f, Math.Min(1.0f, value));
+        // Optional: Clamp method for manual clamping
+        public void Clamp()
+        {
+            R = Math.Max(0.0f, Math.Min(1.0f, R));
+            G = Math.Max(0.0f, Math.Min(1.0f, G));
+            B = Math.Max(0.0f, Math.Min(1.0f, B));
+        }
 
+        // Optional: Add, Multiply, Scale methods for convenience
         public ColorRGB Add(ColorRGB other)
         {
-            return new ColorRGB(
-                Clamp(R + other.R),
-                Clamp(G + other.G),
-                Clamp(B + other.B)
-            );
+            return new ColorRGB(R + other.R, G + other.G, B + other.B);
         }
 
         public ColorRGB Multiply(ColorRGB other)
         {
-            return new ColorRGB(
-                Clamp(R * other.R),
-                Clamp(G * other.G),
-                Clamp(B * other.B)
-            );
+            return new ColorRGB(R * other.R, G * other.G, B * other.B);
         }
 
         public ColorRGB Scale(float value)
         {
-            return new ColorRGB(
-                Clamp(R * value),
-                Clamp(G * value),
-                Clamp(B * value)
-            );
+            return new ColorRGB(R * value, G * value, B * value);
         }
     }
 

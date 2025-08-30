@@ -12,7 +12,16 @@ namespace Render
         public List<Vec3> VerticiesList = new List<Vec3>();
         public List<Material> MaterialList = new List<Material>
         {
-            new Material()
+            new Material(
+            new ColorRGB(0.5f, 0.5f, 0.5f), // BaseColor: medium grey
+            new ColorRGB(0.1f, 0.1f, 0.1f), // SpecularColor: very faint
+            new ColorRGB(0.2f, 0.2f, 0.2f), // AmbientColor: slightly dark
+            new ColorRGB(0f, 0f, 0f),       // EmissionColor: none
+            8f,                             // Shininess: broad highlights
+            0.05f,                          // Reflectivity: very low
+            0f,                             // Transparency: opaque
+            1.0f                            // RefractiveIndex: air
+        )
         };
         List<Face> FaceList = new List<Face>();
 
@@ -40,6 +49,8 @@ namespace Render
             // Track starting index for vertices and normals for this file
             int vertexStart = VerticiesList.Count;
             int normalStart = 0; // If you want to support global normals, use NormalsList.Count
+
+            int mtl_Index = 0;
 
             List<Vec3> temp_vertices = new List<Vec3>();
             List<Vec3> temp_normals = new List<Vec3>();
@@ -75,6 +86,15 @@ namespace Render
                     {
                         temp_triangles.Add(new[] { face[0], face[i], face[i + 1] });
                     }
+                }
+                else if (line.StartsWith("mtllib"))
+                {
+                    string[] t_parts = line.Split(' ');
+
+                    Material mat = MaterialsLibrary.GetMaterialByName(t_parts[1]);
+                    mtl_Index = MaterialList.Count;
+                    MaterialList.Add(mat);
+
                 }
             }
 
@@ -117,7 +137,7 @@ namespace Render
                     float mag = (float)Math.Sqrt(nx * nx + ny * ny + nz * nz);
                     normal = mag > 1e-6f ? new Vec3(nx / mag, ny / mag, nz / mag) : new Vec3(0, 0, 0);
                 }
-                FaceList.Add(new Face(vIdx, normal, 0));
+                FaceList.Add(new Face(vIdx, normal, mtl_Index));
             }
         }
 
@@ -217,33 +237,55 @@ namespace Render
         }
     }
 
-    public class Material
+    public struct Material
     {
-        public ColorRGB BaseColor { get; set; }
-        public ColorRGB SpecularColor { get; set; }
-        public ColorRGB AmbientColor { get; set; }
-        public ColorRGB EmissionColor { get; set; }
-        public float Shininess { get; set; }
-        public float Reflectivity { get; set; }
-        public float Transparency { get; set; }
-        public float RefractiveIndex { get; set; }
+        // 0 - BaseColor: The main color of the material (diffuse/albedo)
+        // Range: Each channel 0.0 (black) to 1.0 (full color)
+        public ColorRGB BaseColor;
+
+        // 1 - SpecularColor: The color of specular highlights (reflected light)
+        // Range: Each channel 0.0 (none) to 1.0 (full color)
+        public ColorRGB SpecularColor;
+
+        // 2 - AmbientColor: The color under ambient lighting (global illumination)
+        // Range: Each channel 0.0 (none) to 1.0 (full color)
+        public ColorRGB AmbientColor;
+
+        // 3 - EmissionColor: The color the material emits (self-illumination)
+        // Range: Each channel 0.0 (none) to 1.0 (full color)
+        public ColorRGB EmissionColor;
+
+        // 4 - Shininess: Controls the size/sharpness of specular highlights
+        // Range: 0 (very broad/dull) to 128+ (very sharp/mirror-like)
+        public float Shininess;
+
+        // 5 - Reflectivity: How much the material reflects other objects
+        // Range: 0.0 (no reflection) to 1.0 (perfect mirror)
+        public float Reflectivity;
+
+        // 6 - Transparency: How transparent the material is
+        // Range: 0.0 (opaque) to 1.0 (fully transparent)
+        public float Transparency;
+
+        // 7 - RefractiveIndex: Controls bending of light for transparent materials
+        // Range: 1.0 (air), 1.33 (water), 1.5 (glass), higher = more bending
+        public float RefractiveIndex;
 
         public Material(
-            ColorRGB baseColor = null,
-            ColorRGB specularColor = null,
-            ColorRGB ambientColor = null,
-            ColorRGB emissionColor = null,
-            float shininess = 32f,
-            float reflectivity = 0.2f,
-            float transparency = 0f,
-            float refractiveIndex = 1f
+            ColorRGB baseColor,
+            ColorRGB specularColor,
+            ColorRGB ambientColor,
+            ColorRGB emissionColor,
+            float shininess,
+            float reflectivity,
+            float transparency,
+            float refractiveIndex
         )
         {
-            BaseColor = baseColor ?? new ColorRGB(0.7f, 0.25f, 0.7f);
-            SpecularColor = specularColor ?? new ColorRGB(0.3f, 0.3f, 0.3f);
-            AmbientColor = ambientColor ?? new ColorRGB(0.1f, 0.1f, 0.1f);
-            EmissionColor = emissionColor ?? new ColorRGB(0f, 0f, 0f);
-
+            BaseColor = baseColor;
+            SpecularColor = specularColor;
+            AmbientColor = ambientColor;
+            EmissionColor = emissionColor;
             Shininess = shininess;
             Reflectivity = reflectivity;
             Transparency = transparency;

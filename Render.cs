@@ -28,13 +28,16 @@ namespace Render
             int pixelCount = width * height;
             var device = GraphicsDevice.GetDefault();
             using ReadOnlyBuffer<GpuFace> facesBuffer = device.AllocateReadOnlyBuffer(scene.GpuFaces.ToArray());
+            using ReadOnlyBuffer<Material> materialBuffer = device.AllocateReadOnlyBuffer(scene.MaterialList.ToArray());
             using ReadWriteBuffer<float3> outputBuffer = device.AllocateReadWriteBuffer<float3>(pixelCount);
 
-            int maxBounces = 2; // can be parameterized
+            int maxBounces = 5; // can be parameterized
 
+            using ReadWriteBuffer<RaytraceKernel.RayHit> hitsBuffer = device.AllocateReadWriteBuffer<RaytraceKernel.RayHit>(maxBounces);
             // Run kernel for all pixels in parallel
             device.For(pixelCount, new RaytraceKernel(
                 facesBuffer,
+                materialBuffer,
                 width,
                 height,
                 camPos3,
@@ -44,7 +47,8 @@ namespace Render
                 camera.Fov.x,
                 camera.Fov.y,
                 maxBounces,
-                outputBuffer
+                outputBuffer,
+                hitsBuffer 
             ));
 
             // Copy results from GPU to CPU
@@ -68,7 +72,7 @@ namespace Render
             Debug.LogDiff("RenderEnd", "RenderStart", "Render Took: ", "s");
         }
 
-       
+
 
         private static Vec3 GetForwardFromRotation(Vec3 rotation)
         {
@@ -109,5 +113,5 @@ namespace Render
                 return new Vec3(v.x / mag, v.y / mag, v.z / mag);
             return new Vec3(0, 0, 0);
         }
-        }
     }
+}
