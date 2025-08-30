@@ -1,8 +1,9 @@
 using ComputeSharp;
+using System.Numerics; // for Vector3
 
 namespace Render.GpuShaders
 {
-        [EmbeddedBytecode(DispatchAxis.X)]
+    [EmbeddedBytecode(DispatchAxis.X)]
     public readonly partial struct RaytraceKernel : IComputeShader
     {
         public readonly ReadOnlyBuffer<GpuFace> Faces;
@@ -70,7 +71,8 @@ namespace Render.GpuShaders
 
         private float3 TraceRay(float3 origin, float3 direction, int bounces)
         {
-            float3 hitColor = new float3(1f, 1f, 1f);
+            float3 hitColor = new float3(0f, 0f, 0f);
+            float3 sunNormal = new float3(0f, -1f, 0f);
             float3 currOrigin = origin;
             float3 currDir = direction;
             for (int bounce = 0; bounce <= bounces; bounce++)
@@ -92,7 +94,12 @@ namespace Render.GpuShaders
                 if (hitFace != -1)
                 {
                     GpuFace face = Faces[hitFace];
-                    hitColor = face.Color;
+
+                    float hue = NormalDifference(face.Normal, sunNormal); //* 0.9f + 0.1f;
+
+                    //hitColor = face.Color;
+
+                    hitColor = new float3(hue, hue, hue);
                     if (bounce < bounces && face.Material > 0)
                     {
                         float3 hitPoint = currOrigin + currDir * closestT;
@@ -102,11 +109,30 @@ namespace Render.GpuShaders
                         continue;
                     }
                 }
+                else
+                {
+                    float hue = NormalDifference(currDir, sunNormal); //* 0.9f + 0.1f;
+
+                    //hitColor = face.Color;
+
+                    hitColor = new float3(.7f, .5f, 1f-hue);
+                }
                 break;
             }
             return hitColor;
         }
 
+        public static float NormalDifference(Vector3 n1, Vector3 n2)
+        {
+            // Assumes n1 and n2 are already normalized
+            float dot = Vector3.Dot(n1, n2);
+
+            // Clamp to avoid floating-point errors outside [-1,1]
+            dot = Hlsl.Clamp(dot, -1f, 1f);
+
+            // Remap: 1 → 0, -1 → 1
+            return (1f - dot) * 0.5f;
+        }
         private static bool RayTriangleIntersect(float3 orig, float3 dir, float3 v0, float3 v1, float3 v2, out float t)
         {
             t = 0f;
