@@ -25,11 +25,23 @@ namespace Render
             transparency: 0f,
             refractiveIndex: 1f
         );
+
+        public static readonly Material Blue = new Material(
+            baseColor: new ColorRGB(0f, 0f, 1f),
+            specularColor: new ColorRGB(0.8f, 0.8f, 0.8f),
+            ambientColor: new ColorRGB(0.1f, 0.1f, 0.1f),
+            emissionColor: new ColorRGB(0f, 0f, 0f),
+            shininess: 0.3f,
+            reflectivity: 0.2f,
+            transparency: 0f,
+            refractiveIndex: 1f
+        );
+
         public static readonly Material WhiteLight = new Material(
             baseColor: new ColorRGB(1f, 1f, 1f),       // white base
             specularColor: new ColorRGB(1f, 1f, 1f),   // bright highlights
             ambientColor: new ColorRGB(1f, 1f, 1f),    // fully lit under ambient light
-            emissionColor: new ColorRGB(1f, 1f, 1f),   // emits white light
+            emissionColor: new ColorRGB(10f, 10f, 10f),   // emits white light
             shininess: 1f,                             // mirror-like sharpness
             reflectivity: 0f,                          // not reflective, just emits light
             transparency: 0f,                          // opaque
@@ -41,7 +53,8 @@ namespace Render
         {
             { "Mirror", Mirror },
             { "WhiteLight", WhiteLight },
-            { "Red", Red }
+            { "Red", Red },
+            {"Blue", Blue}
             // Add more as needed
         };
 

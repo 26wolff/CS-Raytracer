@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using Render.GpuShaders;
+using System.Collections.Generic;
 using ComputeSharp;
 
 namespace Render
@@ -30,34 +31,56 @@ namespace Render
             using ReadOnlyBuffer<GpuFace> facesBuffer = device.AllocateReadOnlyBuffer(scene.GpuFaces.ToArray());
             using ReadOnlyBuffer<Material> materialBuffer = device.AllocateReadOnlyBuffer(scene.MaterialList.ToArray());
             using ReadWriteBuffer<float3> outputBuffer = device.AllocateReadWriteBuffer<float3>(pixelCount);
-
+            int count;
             int maxBounces = 5; // can be parameterized
 
-            using ReadWriteBuffer<RaytraceKernel.RayHit> hitsBuffer = device.AllocateReadWriteBuffer<RaytraceKernel.RayHit>(maxBounces);
-            // Run kernel for all pixels in parallel
-            device.For(pixelCount, new RaytraceKernel(
-                facesBuffer,
-                materialBuffer,
-                width,
-                height,
-                camPos3,
-                camForward3,
-                camRight3,
-                camUp3,
-                camera.Fov.x,
-                camera.Fov.y,
-                maxBounces,
-                outputBuffer,
-                hitsBuffer 
-            ));
+            List<List<float3>> Total = new List<List<float3>>();
 
-            // Copy results from GPU to CPU
-            var results = outputBuffer.ToArray();
+            for (int k = 0; k < 20; k++)
+            {    // Run kernel for all pixels in parallel
+
+                count = k;
+                device.For(pixelCount, new RaytraceKernel(
+                    facesBuffer,
+                    materialBuffer,
+                    count,
+                    width,
+                    height,
+                    camPos3,
+                    camForward3,
+                    camRight3,
+                    camUp3,
+                    camera.Fov.x,
+                    camera.Fov.y,
+                    maxBounces,
+                    outputBuffer
+                ));
+
+                // Copy results from GPU to CPU
+                var results = outputBuffer.ToArray();
+                Total.Add(new List<float3>(results));
+
+            }
+
             for (int i = 0; i < pixelCount; i++)
             {
                 int x = i % width;
                 int y = i / width;
-                var result = results[i];
+
+                float3 acc = new float3(0f, 0f, 0f);
+
+                foreach (List<float3> results in Total)
+                {
+                    acc.X += results[i].X;
+                    acc.Y += results[i].Y;
+                    acc.Z += results[i].Z;
+                }
+
+                acc.X /= Total.Count;
+                acc.Y /= Total.Count;
+                acc.Z /= Total.Count;
+
+                var result = acc;
                 bmp.SetPixel(x, y, Color.FromArgb(
                     (int)Math.Clamp(result.X * 255f, 0, 255),
                     (int)Math.Clamp(result.Y * 255f, 0, 255),
@@ -66,7 +89,6 @@ namespace Render
             }
 
             BitmapIO.SaveBitmap(id, bmp);
-
             Debug.LogNow("Render Ended at: ", "s");
             Debug.HoldNow("RenderEnd");
             Debug.LogDiff("RenderEnd", "RenderStart", "Render Took: ", "s");
