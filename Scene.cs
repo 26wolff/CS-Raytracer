@@ -10,19 +10,8 @@ namespace Render
     public class Scene
     {
         public List<Vec3> VerticiesList = new List<Vec3>();
-        public List<Material> MaterialList = new List<Material>
-        {
-            new Material(
-            new ColorRGB(0.5f, 0.5f, 0.5f), // BaseColor: medium grey
-            new ColorRGB(0.1f, 0.1f, 0.1f), // SpecularColor: very faint
-            new ColorRGB(0.2f, 0.2f, 0.2f), // AmbientColor: slightly dark
-            new ColorRGB(0f, 0f, 0f),       // EmissionColor: none
-            8f,                             // Shininess: broad highlights
-            0.05f,                          // Reflectivity: very low
-            0f,                             // Transparency: opaque
-            1.0f                            // RefractiveIndex: air
-        )
-        };
+        public List<Material> MaterialList = new List<Material>();
+        
         List<Face> FaceList = new List<Face>();
 
         // New: GPU-friendly faces (no indices, direct verts)
@@ -34,7 +23,7 @@ namespace Render
             Debug.HoldNow("SceneStart");
 
             // load all obj files
-            Load_Multiple_From_TXT("ToRender.txt");
+            Load_Multiple_From_TXT("zToRender.txt");
 
             // Build GPU buffer after loading
             BuildGpuFaces();
@@ -54,7 +43,7 @@ namespace Render
 
             List<Vec3> temp_vertices = new List<Vec3>();
             List<Vec3> temp_normals = new List<Vec3>();
-            List<(int vIdx, int nIdx)[]> temp_triangles = new List<(int, int)[]>();
+            List<(int vIdx, int nIdx, int matIdx)[]> temp_triangles = new List<(int, int, int)[]>();
 
             string fullPath = Path.Combine("./objects", name);
             foreach (var line in File.ReadLines(fullPath))
@@ -72,14 +61,14 @@ namespace Render
                 else if (line.StartsWith("f "))
                 {
                     string[] t_parts = line.Split(' ');
-                    var face = new List<(int vIdx, int nIdx)>();
+                    var face = new List<(int vIdx, int nIdx, int matIdx)>();
                     for (int i = 1; i < t_parts.Length; i++)
                     {
                         var temp = t_parts[i];
                         var split = temp.Split('/');
                         int vIdx = int.Parse(split[0]) - 1 + vertexStart; // Offset by starting index
                         int nIdx = (split.Length >= 3 && !string.IsNullOrWhiteSpace(split[2])) ? int.Parse(split[2]) - 1 + normalStart : -1;
-                        face.Add((vIdx, nIdx));
+                        face.Add((vIdx, nIdx, mtl_Index));
                     }
                     // Triangulate polygon face (CCW order)
                     for (int i = 1; i < face.Count - 1; i++)
@@ -96,6 +85,10 @@ namespace Render
                     MaterialList.Add(mat);
 
                 }
+                else if (line.StartsWith("BREAK"))
+                {
+                    break;
+                }
             }
 
             // Add all vertices in order, no deduplication
@@ -108,6 +101,7 @@ namespace Render
                 int idx0 = tri[0].vIdx;
                 int idx1 = tri[1].vIdx;
                 int idx2 = tri[2].vIdx;
+                int matIdx = tri[0].matIdx;
                 Count3 vIdx = new Count3(idx0, idx1, idx2);
 
                 // Use per-vertex normals if available, else compute geometric normal
@@ -137,7 +131,7 @@ namespace Render
                     float mag = (float)Math.Sqrt(nx * nx + ny * ny + nz * nz);
                     normal = mag > 1e-6f ? new Vec3(nx / mag, ny / mag, nz / mag) : new Vec3(0, 0, 0);
                 }
-                FaceList.Add(new Face(vIdx, normal, mtl_Index));
+                FaceList.Add(new Face(vIdx, normal, matIdx));
             }
         }
 

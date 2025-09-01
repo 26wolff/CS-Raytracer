@@ -15,7 +15,7 @@ namespace Render
             Debug.HoldNow("MainStart");
 
             int width = 1280;
-            int height = 720;
+            int height = 1280;
             int scale = 1;
             string bitmapId = "gradient";
 
@@ -23,8 +23,8 @@ namespace Render
 
             Scene scene = new Scene();
 
-            Vec3 CamPos = new Vec3(0, 0, -6);
-            Vec3 CamAngle = new Vec3(0, 0, 0); // pitch, yaw (45 deg), roll
+            Vec3 CamPos = new Vec3(0, 0, 5);
+            Vec3 CamAngle = new Vec3(0, (float)Math.PI, 0); // pitch, yaw (45 deg), roll
             Vec2 CamFov = new Vec2((float)Math.PI / 2f, (float)Math.PI / 2f / ((float)width / (float)height));
 
             Camera camera = new Camera(CamPos, CamAngle, CamFov);
@@ -57,6 +57,7 @@ namespace Render
             Debug.LogNow("Main Ended at: ", "s");
             Debug.HoldNow("MainEnd");
             Debug.LogDiff("MainEnd", "MainStart", "Main Took: ", "s");
+
         }
     }
 }
